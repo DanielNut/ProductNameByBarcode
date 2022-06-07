@@ -53,8 +53,8 @@ def get_products_info_barcode_list(url):
         for i in range(number_of_parsed_barcodes, len(barcodes)):
             barcode = barcodes[i]
             if barcode == current_barcode and current_name:
-                csvwriter.writerow([barcode, name])
-                print(f'barcode {barcode} done')
+                # csvwriter.writerow([barcode, name])
+                # print(f'barcode {barcode} done')
                 continue
             else:
                 current_barcode = barcode
@@ -82,8 +82,8 @@ def get_products_info_ean13():
         for i in range(number_of_parsed_barcodes, len(barcodes)):
             barcode = barcodes[i]
             if barcode == current_barcode and current_name:
-                csvwriter.writerow([barcode, name])
-                print(f'barcode {barcode} done')
+                # csvwriter.writerow([barcode, name])
+                # print(f'barcode {barcode} done')
                 continue
             else:
                 bar_url = url + barcode
@@ -92,14 +92,24 @@ def get_products_info_ean13():
                 current_barcode = barcode
                 current_name = name
 
-                if name and name != 'Товар не найден в базе данных':
-                    csvwriter.writerow([barcode, name])
-                    print(f'barcode {barcode} done')
-                    time.sleep(0.1)
+                if name:
+                    print(name)
+                    if name != 'Товар не найден в базе данных':
+                        csvwriter.writerow([barcode, name])
+                        print(f'barcode {barcode} done')
+                        time.sleep(0.1)
+                    else:
+                        write_barcode_to_not_founded(barcode)
                 else:
                     write_number_of_parsed_barcodes(i)
                     print(f'{i} barcodes parsed')
                     return
+
+
+def write_barcode_to_not_founded(barcode):
+    with open('not_founded_codes.txt', 'a') as f:
+        fwriter = csv.writer(f)
+        fwriter.writerow([barcode])
 
 
 def get_barcodes():
@@ -139,6 +149,8 @@ def get_product_info_from_url_ean13(url):
     return product_name.get_text()
 
 
+
+
 def set_selenium_driver(proxy: None):
     options = Options()
     ua = UserAgent(verify_ssl=False)
@@ -165,10 +177,10 @@ def set_selenium_driver(proxy: None):
 
 
 def wait_between_calls():
-    seconds = 300
+    seconds = 60
     for i in range(seconds):
         time.sleep(1)
-        if i % 100 == 0:
+        if i % 10 == 0:
             print(f'{seconds - i} seconds left')
 
 
@@ -191,6 +203,8 @@ def get_products_by_barcode_progaonline():
                                                   'form > div:nth-child(4) > input[type=submit]')
     action.move_to_element(input_element).click(input_element).send_keys(text_to_send).perform()
     action.move_to_element(button).click(button).perform()
+
+
 
 
 if __name__ == '__main__':

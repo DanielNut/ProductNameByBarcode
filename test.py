@@ -85,10 +85,7 @@ class RequestHandler:
 
 
 def get_page_by_barcode_with_proxy_selenium(barcode):
-    rh = RequestHandler()
-    proxy = rh.get('http://ru.disai.org/')
-    print(f'proxy = {proxy}')
-    driver = set_selenium_driver(proxy)
+    driver = set_selenium_driver()
     action = ActionChains(driver)
     get_product_info_by_barcode(barcode, driver, action)
 
@@ -109,7 +106,7 @@ def get_product_info_by_barcode(barcode, driver, action):
     print(font.text)
 
 
-def set_selenium_driver(proxy: None):
+def set_selenium_driver():
     options = Options()
     ua = UserAgent(verify_ssl=False)
     userAgent = ua.random
@@ -120,16 +117,12 @@ def set_selenium_driver(proxy: None):
     options = webdriver.FirefoxOptions()
     options.add_argument(f'user-agent={userAgent}')
     options.add_argument('headless')
-    if proxy:
-        # chrome_options = webdriver.ChromeOptions()
-        # chrome_options.add_argument()
-        options.add_argument(f'--proxy-server=http://{proxy}')
     # binary = '/home/daniel/Downloads/firefox'
 
     gecko = "~/Downloads/geckodriver"
     firefox_binary = FirefoxBinary(gecko)
     # browser = webdriver.Firefox(firefox_binary=binary)
-    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()), options=options)
+    driver = webdriver.Firefox(service=Service(GeckoDriverManager().install()))
     # driver = webdriver.Firefox(firefox_binary=firefox_binary, executable_path=gecko, options=options)
     return driver
 
@@ -138,4 +131,6 @@ def set_selenium_driver(proxy: None):
 
 
 if __name__ == '__main__':
-    get_page_by_barcode_with_proxy_selenium('4602984020546')
+    os.environ['GH_TOKEN'] = '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'
+    # driver = set_selenium_driver()
+    get_page_by_barcode_with_proxy_selenium('4607110521621')
