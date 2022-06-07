@@ -77,13 +77,11 @@ def get_products_info_ean13():
     current_name = ''
     with open('result.csv', 'a') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter='\t')
-        with open('number_of_parsed_barcodes.csv', 'r') as f:
-            number_of_parsed_barcodes = int(f.read())
+        number_of_parsed_barcodes = get_number_of_parsed_barcodes()
+
         for i in range(number_of_parsed_barcodes, len(barcodes)):
             barcode = barcodes[i]
             if barcode == current_barcode and current_name:
-                # csvwriter.writerow([barcode, name])
-                # print(f'barcode {barcode} done')
                 continue
             else:
                 bar_url = url + barcode
@@ -110,6 +108,12 @@ def write_barcode_to_not_founded(barcode):
     with open('not_founded_codes.txt', 'a') as f:
         fwriter = csv.writer(f)
         fwriter.writerow([barcode])
+
+
+def get_number_of_parsed_barcodes():
+    with open('number_of_parsed_barcodes.csv', 'r') as f:
+        number_of_parsed_barcodes = int(f.read())
+    return number_of_parsed_barcodes
 
 
 def get_barcodes():
@@ -149,8 +153,6 @@ def get_product_info_from_url_ean13(url):
     return product_name.get_text()
 
 
-
-
 def set_selenium_driver(proxy: None):
     options = Options()
     ua = UserAgent(verify_ssl=False)
@@ -177,7 +179,7 @@ def set_selenium_driver(proxy: None):
 
 
 def wait_between_calls():
-    seconds = 60
+    seconds = 120
     for i in range(seconds):
         time.sleep(1)
         if i % 10 == 0:
@@ -203,6 +205,7 @@ def get_products_by_barcode_progaonline():
                                                   'form > div:nth-child(4) > input[type=submit]')
     action.move_to_element(input_element).click(input_element).send_keys(text_to_send).perform()
     action.move_to_element(button).click(button).perform()
+
 
 
 
