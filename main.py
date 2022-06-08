@@ -46,13 +46,14 @@ def get_products_info_barcode_list(url):
     barcodes = get_barcodes()
     current_barcode = 0
     current_name = ''
+    parsed_barcodes = get_parsed_barcodes()
     with open('result.csv', 'a') as csvfile:
         csvwriter = csv.writer(csvfile, delimiter='\t')
         with open('number_of_parsed_barcodes.csv', 'r') as f:
             number_of_parsed_barcodes = int(f.read())
         for i in range(number_of_parsed_barcodes, len(barcodes)):
             barcode = barcodes[i]
-            if barcode == current_barcode and current_name:
+            if ((barcode in parsed_barcodes) or barcode == current_barcode) and current_name:
                 # csvwriter.writerow([barcode, name])
                 # print(f'barcode {barcode} done')
                 continue
@@ -90,18 +91,26 @@ def get_products_info_ean13():
                 current_barcode = barcode
                 current_name = name
 
+                print(name)
                 if name:
-                    print(name)
                     if name != 'Товар не найден в базе данных':
                         csvwriter.writerow([barcode, name])
                         print(f'barcode {barcode} done')
                         time.sleep(0.1)
                     else:
                         write_barcode_to_not_founded(barcode)
+                        print(f'barcode {barcode} is added to not found')
                 else:
                     write_number_of_parsed_barcodes(i)
                     print(f'{i} barcodes parsed')
                     return
+
+
+def get_parsed_barcodes():
+    with open('result.csv', 'r') as csvfile:
+        rows = csvfile.readlines()
+    parsed_barcodes = [row.split()[0] for row in rows]
+    return parsed_barcodes
 
 
 def write_barcode_to_not_founded(barcode):
@@ -216,6 +225,7 @@ if __name__ == '__main__':
         get_products_info_barcode_list('https://barcode-list.ru/barcode/RU/Поиск.htm?barcode=')
         get_products_info_ean13()
         wait_between_calls()
+
     # barcodes = get_barcodes()
     # with open('unique_barcodes_155-1000.csv', 'w+') as f:
     #     fwriter = csv.writer(f)
