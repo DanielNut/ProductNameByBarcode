@@ -114,7 +114,7 @@ def get_parsed_barcodes():
 
 
 def write_barcode_to_not_founded(barcode):
-    with open('not_founded_codes.txt', 'a') as f:
+    with open('not_found_codes.txt', 'a') as f:
         fwriter = csv.writer(f)
         fwriter.writerow([barcode])
 
